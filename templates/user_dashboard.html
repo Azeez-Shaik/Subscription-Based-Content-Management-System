@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>User Dashboard</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background: url('https://images.pexels.com/photos/949132/pexels-photo-949132.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2') no-repeat center center fixed;
+            background-size: cover;
+            background-attachment: fixed;
+            margin: 0;
+            padding: 0;
+            color: #f9f9f9;
+        }
+
+        .navbar {
+            display: flex;
+            justify-content: center;
+            background: rgba(119, 119, 119, 0.8);
+            padding: 10px 0;
+            position: fixed;
+            top: 5px;
+            left: 50%; /* Move the navbar to the center of the page */
+            transform: translateX(-50%); /* Adjust to center it properly */
+            width: 84%;
+            z-index: 1000;
+            backdrop-filter: blur(15px);
+            border-radius: 10px;
+        }
+
+        .navbar a {
+            color: white;
+            text-decoration: none;
+            padding: 12px 20px;
+            font-size: 15px;
+            transition: 0.3s;
+        }
+
+        .navbar a:hover {
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 5px;
+        }
+
+        .container {
+            background: rgba(0, 0, 0, 0.75);
+            width: 50%;
+            margin: 80px auto 50px auto; /* Adjust margin for navbar */
+            border: rgba(99, 99, 99, 0.767) 1px solid;
+            padding: 25px;
+            box-shadow: 0px 0px 10px 5px rgba(99, 99, 99, 0.767);
+            backdrop-filter: blur(15px);
+            border-radius: 10px;
+            text-align: center;
+            display: none;
+        }
+        .active {
+            display: block !important;
+        }
+        h2 {
+            color:#a6e4e7;
+            text-transform: uppercase;
+            margin-bottom: 15px;
+        }
+
+        h3 {
+            color:#ebcbae;
+            text-transform: uppercase;
+            margin-bottom: 15px;
+        }
+
+        .info-box {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            font-size: 18px;
+        }
+
+        button {
+            background:#698474;
+            color: black;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            transition: all 0.3s ease-in-out;
+        }
+
+        button:hover {
+            background:rgb(163, 208, 181);
+            transform: scale(1.05);
+        }
+
+        select, input {
+            padding: 10px;
+            margin: 5px;
+            border: none;
+            border-radius: 5px;
+            width: 80%;
+            color: white;
+        }
+
+        #subscription-options, #payment-form {
+            display: none;
+            opacity: 0;
+            transition: opacity 0.5s ease-in-out;
+        }
+
+        .show {
+            display: block !important;
+            opacity: 1 !important;
+        }
+
+        
+
+       
+    </style>
+
+    <script>
+        
+        
+        function showPaymentForm() {
+            var subscriptionType = document.getElementById("subscription_type").value;
+            var amount = 0;
+
+            if (subscriptionType === "Basic") {
+                amount = 1000;
+            } else if (subscriptionType === "Premium") {
+                amount = 2000;
+            } else if (subscriptionType === "VIP") {
+                amount = 3000;
+            }
+
+            document.getElementById("payment_amount").value = amount;
+            document.getElementById("selected_subscription").value = subscriptionType;
+            document.getElementById("payment-form").classList.add("show");
+
+        }
+        function showSection(sectionId) {
+            document.querySelectorAll('.container').forEach(section => {
+                section.classList.remove('active');
+            });
+            document.getElementById(sectionId).classList.add('active');
+        }
+    </script>
+</head>
+<body>
+
+    <div class="navbar">
+        
+        <a href="#" onclick="showSection('Profile')">Profile</a>
+        <a href="#" onclick="showSection('Workouts')">Workouts</a>
+        
+        <a class="logout" href="{{ url_for('logout') }}">Logout</a>
+    </div>
+
+    <div id="Profile" class="container active">
+        <h2>Welcome, {{ username }}!</h2>
+
+        <h3>Subscription Details</h3>
+        <div class="info-box">
+            <p><strong>Type:</strong> {{ subscription_type or 'Not Subscribed' }}</p>
+            <p><strong>Expiry Date:</strong> {{ expiry_date or 'N/A' }}</p>
+        </div>
+
+        <h3>Your Assigned Trainer</h3>
+        <div class="info-box" >
+            {% if trainer_name %}
+                <p><strong>Name:</strong> {{ trainer_name }}</p>
+                <p><strong>Contact:</strong> {{ trainer_contact }}</p>
+                <p><strong>Specialization:</strong> {{ trainer_specialization }}</p>
+            {% else %}
+                <p>You have not been assigned a trainer yet.</p>
+            {% endif %}
+        </div>
+
+        <h3>Upgrade Subscription</h3>
+        <form onsubmit="event.preventDefault(); showSubscriptionOptions();">
+            <label for="subscription_type">Your Current Subscription:</label>
+            <input type="text" value="{{ subscription_type or 'None' }}" disabled>
+            <button type="submit">Upgrade Subscription</button>
+        </form>
+
+        <div id="subscription-options">
+            <form onsubmit="event.preventDefault(); showPaymentForm();">
+                <label for="subscription_type">Select Subscription Type:</label>
+                <select name="subscription_type" id="subscription_type">
+                    <option value="Basic">Basic - ₹1000/month</option>
+                    <option value="Premium">Premium - ₹2000/month</option>
+                    <option value="VIP">VIP - ₹3000/month</option>
+                </select>
+                <button type="submit">Proceed to Payment</button>
+            </form>
+        </div>
+
+        <div id="payment-form">
+            <h3>Payment Details</h3>
+            <form action="{{ url_for('process_payment') }}" method="POST">
+                <input type="hidden" name="user_id" value="{{ current_user.id }}">
+                <input type="hidden" name="subscription_type" id="selected_subscription">
+                
+                <label for="payment_type">Payment Type:</label>
+                <select name="payment_type">
+                    <option value="one-time">One-Time Payment</option>
+                    <option value="recurring">Recurring Payment</option>
+                </select>
+
+                <label for="amount">Amount:</label>
+                <input type="text" id="payment_amount" name="amount" readonly>
+                
+                <button type="submit">Confirm Payment</button>
+            </form>
+        </div>
+
+        <h3>Cancel Subscription</h3>
+        <form action="{{ url_for('delete_user_subscription', user_id=current_user.id) }}" method="POST">
+            <button type="submit">Cancel Subscription</button>
+        </form>
+    </div>
+    <div id="Workouts" class="container">
+        <h2>Your Subscription Content</h2>
+        <table>
+            <tr>
+                <th>Filename</th>
+                <th>Preview</th>
+            </tr>
+            {% for item in content %}
+            <tr>
+                <td>{{ item.filename }}</td>
+                <td>
+                    {% if item.content_type == 'text' %}
+                        <a href="{{ url_for('get_content', content_id=item.id) }}" target="_blank">View Text</a>
+                    {% elif item.content_type == 'image' %}
+                        <img src="{{ url_for('get_content', content_id=item.id) }}" alt="Image" style="max-width: 150px;">
+                    {% elif item.content_type == 'video' %}
+                        <video width="200" controls>
+                            <source src="{{ url_for('get_content', content_id=item.id) }}" type="video/mp4">
+                        </video>
+                    {% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+        </table>
+    
+        <h2>7-Day Workout Plan</h2>
+        <div class="workout-plan">
+            {% if subscription_type and trainer_specialization %}
+                {% if trainer_specialization == "Personal Training" %}
+                    <ul>
+                        <li><strong>Day 1:</strong> Full Body Strength – Squats, Deadlifts, Push-ups</li>
+                        <li><strong>Day 2:</strong> Cardio & Core – Treadmill Intervals, Bicycle Crunches</li>
+                        <li><strong>Day 3:</strong> Upper Body Strength – Bench Press, Shoulder Press</li>
+                        <li><strong>Day 4:</strong> Mobility & Recovery – Yoga, Foam Rolling</li>
+                        <li><strong>Day 5:</strong> Lower Body Strength – Leg Press, Hamstring Curls</li>
+                        <li><strong>Day 6:</strong> HIIT & Functional Training – Burpees, Kettlebell Swings</li>
+                        <li><strong>Day 7:</strong> Active Recovery – Walking, Stretching</li>
+                    </ul>
+                {% elif trainer_specialization == "Weight Loss & Fat Loss" %}
+                    <ul>
+                        <li><strong>Day 1:</strong> HIIT Cardio + Strength – Jump Rope, Mountain Climbers</li>
+                        <li><strong>Day 2:</strong> Lower Body Burn – Lunges, Deadlifts</li>
+                        <li><strong>Day 3:</strong> Core & Upper Body – Hanging Leg Raises, Shoulder Press</li>
+                        <li><strong>Day 4:</strong> Full Body HIIT – Kettlebell Swings, Battle Ropes</li>
+                        <li><strong>Day 5:</strong> Steady-State Cardio – Cycling, Light Dumbbell Exercises</li>
+                        <li><strong>Day 6:</strong> Circuit Training – Box Jumps, Medicine Ball Slams</li>
+                        <li><strong>Day 7:</strong> Recovery – Yoga, Stretching</li>
+                    </ul>
+                {% elif trainer_specialization == "Yoga & Flexibility" %}
+                    <ul>
+                        <li><strong>Day 1:</strong> Basic Yoga – Downward Dog, Child’s Pose</li>
+                        <li><strong>Day 2:</strong> Core & Balance – Plank, Warrior 3</li>
+                        <li><strong>Day 3:</strong> Strength & Power Yoga – Chaturanga, Bridge Pose</li>
+                        <li><strong>Day 4:</strong> Relaxation – Pigeon Pose, Butterfly Stretch</li>
+                        <li><strong>Day 5:</strong> Hip & Shoulder Opening – Cow Face Pose, Triangle Pose</li>
+                        <li><strong>Day 6:</strong> Dynamic Flexibility – Flow Yoga, Twisting Poses</li>
+                        <li><strong>Day 7:</strong> Recovery – Meditation, Deep Breathing</li>
+                    </ul>
+                {% elif trainer_specialization == "Bodybuilding & Physique Training" %}
+                    <ul>
+                        <li><strong>Day 1:</strong> Chest & Triceps – Bench Press, Tricep Dips</li>
+                        <li><strong>Day 2:</strong> Back & Biceps – Lat Pulldown, Bent-over Rows</li>
+                        <li><strong>Day 3:</strong> Legs & Glutes – Squats, Deadlifts</li>
+                        <li><strong>Day 4:</strong> Rest or Active Recovery</li>
+                        <li><strong>Day 5:</strong> Shoulders & Arms – Shoulder Press, Hammer Curls</li>
+                        <li><strong>Day 6:</strong> Full Body & Core – Weighted Planks, Hanging Leg Raises</li>
+                        <li><strong>Day 7:</strong> Recovery – Yoga, Stretching</li>
+                    </ul>
+                {% elif trainer_specialization == "Rehabilitation & Injury Recovery" %}
+                    <ul>
+                        <li><strong>Day 1:</strong> Mobility & Stability – Resistance Band Exercises</li>
+                        <li><strong>Day 2:</strong> Lower Back & Core Strength – Bird Dog, Dead Bug</li>
+                        <li><strong>Day 3:</strong> Joint Recovery – Foam Rolling, Passive Stretching</li>
+                        <li><strong>Day 4:</strong> Upper Body Strength – Shoulder Rotations, Wall Push-ups</li>
+                        <li><strong>Day 5:</strong> Leg Strength Recovery – Seated Leg Lifts, Step-ups</li>
+                        <li><strong>Day 6:</strong> Postural Correction – Yoga, Pilates</li>
+                        <li><strong>Day 7:</strong> Rest & Hydration</li>
+                    </ul>
+                {% elif trainer_specialization == "Senior Fitness Training" %}
+                    <ul>
+                        <li><strong>Day 1:</strong> Chair Exercises – Seated Leg Lifts, Bicep Curls</li>
+                        <li><strong>Day 2:</strong> Balance & Stability – Heel Raises, Single-leg Balance</li>
+                        <li><strong>Day 3:</strong> Low-impact Cardio – Walking, Stationary Cycling</li>
+                        <li><strong>Day 4:</strong> Core & Back Strength – Seated Twists, Bird Dog</li>
+                        <li><strong>Day 5:</strong> Flexibility & Mobility – Light Yoga, Stretching</li>
+                        <li><strong>Day 6:</strong> Functional Training – Sit-to-Stand, Resistance Bands</li>
+                        <li><strong>Day 7:</strong> Rest & Breathing Exercises</li>
+                    </ul>
+                {% else %}
+                    <p>No specific plan available. Please consult your trainer.</p>
+                {% endif %}
+            {% else %}
+                <p>You need a subscription and an assigned trainer to view a personalized workout plan.</p>
+            {% endif %}
+        </div>
+    </div>
+    
+    
+
+</body>
+
+</html>

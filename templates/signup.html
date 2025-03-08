@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Signup</title>
+
+    <!-- Google Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    
+    <style>
+        /* General Reset */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        /* Background with Overlay */
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background: url('https://img.freepik.com/free-photo/3d-gym-equipment_23-2151114137.jpg') no-repeat center center fixed;
+            background-size: cover;
+            position: relative;
+        }
+
+        body::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6); /* Dark Overlay */
+            z-index: 1;
+        }
+
+        /* Signup Box */
+        .signup-container {
+            position: relative;
+            z-index: 2;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            padding: 40px;
+            text-align: center;
+            box-shadow: 0px 0px 10px 5px rgba(99, 99, 99, 0.767);
+            backdrop-filter: blur(15px);
+            border-radius: 10px;
+            background: transparent;
+            transition: transform 0.3s ease-in-out;
+            border: rgba(99, 99, 99, 0.767) 1px solid; 
+        }
+
+        .signup-container:hover {
+            transform: scale(1.02);
+        }
+
+        h2 {
+            background: linear-gradient(to left ,rgb(109, 18, 18) 35%,rgb(45, 45, 190) 35%);
+            background-size: 200% auto;
+            -webkit-background-clip: text;
+            color: transparent;
+            font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
+            animation: gradient 3s linear infinite;
+            width: fit-content;
+            height: fit-content;
+            margin-bottom: 20px;
+            font-size: 30px;
+        }
+
+        @keyframes gradient {
+            0% { background-position: 0% 75%; }
+            50% { background-position: 100% 30%; }
+            100% { background-position: 0% 70%; }  
+        }
+
+        /* Input Fields */
+        input, select {
+            width: 100%;
+            padding: 12px;
+            margin: 10px 0;
+            border: 1px rgb(160, 160, 160) solid;
+            border-radius: 8px;
+            background: transparent;
+            color: white;
+            font-size: 16px;
+            text-align: center;
+            transition: 0.25s all ease-in-out;
+        }
+
+        input::placeholder {
+            color: rgba(199, 194, 194, 0.808);
+        }
+
+        input:hover, select:hover {
+            transform: scale(1.1);
+            background: linear-gradient(to right, rgb(179, 66, 66) 20%,rgb(47, 53, 150) 100%);
+        }
+
+        select {
+            color: white;
+            cursor: pointer;
+        }
+
+        option {
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+        }
+
+        /* Button */
+        button {
+            width: 50%;
+            padding: 5px;
+            margin-top: 15px;
+            background-color: transparent;
+            color: rgb(214, 208, 208);
+            border: none;
+            border-radius: 5px;
+            border: 1px rgb(160, 160, 160) solid;
+            cursor: pointer;
+            font-size: 18px;
+            font-weight: bold;
+            transition: all 0.3s ease-in-out;
+        }
+
+        button:hover {
+            box-shadow: 0 0 20px 5px rgb(109, 18, 18);
+            background-color: rgb(109, 18, 18);
+            color: rgb(255, 255, 255);
+            border: 1px rgb(109, 18, 18) solid;
+            transform: scale(1.05);
+        }
+    </style>
+</head>
+<body>
+    <div class="signup-container">
+        <h2>Signup</h2>
+        <form action="{{ url_for('signup') }}" method="POST">
+            <input type="text" name="username" placeholder="Username" required><br>
+            <input type="email" name="email" placeholder="Email" required><br>
+            <input type="password" name="password" placeholder="Password" required><br>
+            <select name="role">
+                <option value="user">User</option>
+                <option value="admin">Admin</option>
+            </select><br>
+            <button type="submit">Signup</button>
+        </form>
+    </div>
+</body>
+</html>

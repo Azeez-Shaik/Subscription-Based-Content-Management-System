@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard</title>
+    
+    <style>
+        /* General Styles */
+        body {
+            font-family: 'Arial', sans-serif;
+            background: url('https://png.pngtree.com/thumb_back/fh260/background/20240329/pngtree-rows-of-dumbbells-in-the-gym-image_15662386.jpg') no-repeat center center fixed;
+            background-size: cover;
+            color: white;
+            margin: 0;
+            padding: 0;
+            text-align: center;
+        }
+
+        /* Navbar Styles */
+        .navbar {
+            display: flex;
+            justify-content: center;
+            background: rgba(119, 119, 119, 0.8);
+            padding: 10px 0;
+            position: fixed;
+            top: 5px;
+            left: 50%; /* Move the navbar to the center of the page */
+            transform: translateX(-50%); /* Adjust to center it properly */
+            width: 84%;
+            z-index: 1000;
+            backdrop-filter: blur(15px);
+            border-radius: 10px;
+        }
+        
+
+        .navbar a {
+            color: white;
+            text-decoration: none;
+            padding: 12px 20px;
+            font-size: 15px;
+            transition: 0.3s;
+        }
+
+        .navbar a:hover {
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 5px;
+        }
+
+        /* Container */
+        .container {
+            background: transparent;
+            width: 80%;
+            margin: 80px auto 40px; /* Space for the navbar */
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0px 0px 10px 5px rgba(99, 99, 99, 0.767);
+            display: none; /* Hide all sections initially */
+            backdrop-filter: blur(15px);
+        }
+
+        /* Show active section */
+        .active {
+            display: block !important;
+        }
+
+        /* Table Styles */
+        .table-container {
+            overflow-x: auto;
+            max-width: 100%;
+        }
+
+        table {
+            width: 100%;
+            margin-top: 20px;
+            border-collapse: collapse;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            border-radius: 8px;
+        }
+
+        th, td {
+            padding: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            text-align: center;
+        }
+
+        th {
+            background: #82AAB1ff;
+        }
+
+        tr:hover {
+            background: rgb(38, 60, 90);
+            transition: background 0.3s ease-in-out;
+        }
+
+        /* Buttons */
+        button {
+            background: rgba(142, 208, 255, 0.68);
+            color: black;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            transition: 0.3s;
+        }
+
+        button:hover {
+            background: rgb(142, 208, 255);
+            transform: scale(1.05);
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Navigation Bar -->
+    <div class="navbar">
+        <a href="#" onclick="showSection('users')">Users</a>
+        <a href="#" onclick="showSection('trainers')">Trainers</a>
+        <a href="#" onclick="showSection('add-content')">Add Content</a>
+        <a href="#" onclick="showSection('view-content')">View Content</a>
+        <a href="{{ url_for('logout') }}">Logout</a>
+    </div>
+
+    <!-- Users Section -->
+    <div id="users" class="container active">
+        <h1>Users Management</h1>
+        <div class="table-container">
+            <table>
+                <tr>
+                    <th>ID</th>
+                    <th>Username</th>
+                    <th>Email</th>
+                    <th>Subscription</th>
+                    <th>Expiry Date</th>
+                    <th>Actions</th>
+                </tr>
+                {% for user in users %}
+                <tr>
+                    <td>{{ user.id }}</td>
+                    <td>{{ user.username }}</td>
+                    <td>{{ user.email }}</td>
+                    <td>{{ user.subscription_type }}</td>
+                    <td>{{ user.expiry_date }}</td>
+                   <td>
+    <div style="display: flex; gap: 10px;">
+        <form action="{{ url_for('edit_user_subscription', user_id=user.id) }}" method="GET">
+            <button type="submit" style="background: #4CAF50; color: white; padding: 8px 12px; border-radius: 5px; border: none; cursor: pointer;">
+                Edit
+            </button>
+        </form>
+        <form action="{{ url_for('delete_user_subscription', user_id=user.id) }}" method="POST">
+            <button type="submit" onclick="return confirm('Delete this user?')" style="background: #e74c3c; color: white; padding: 8px 12px; border-radius: 5px; border: none; cursor: pointer;">
+                Delete
+            </button>
+        </form>
+    </div>
+</td>
+
+                </tr>
+                {% endfor %}
+            </table>
+        </div>
+    </div>
+
+    <!-- Trainers Section -->
+    <div id="trainers" class="container">
+        <h1>Trainer Management</h1>
+        <h2>Add Trainer</h2>
+        <form action="{{ url_for('add_trainer') }}" method="POST" style="display: flex; gap: 10px; align-items: center; justify-content: center; flex-wrap: nowrap;">
+            <input type="text" name="name" placeholder="Trainer Name" required style="width: 200px; padding: 10px;">
+            
+            <select name="specialization" required style="width: 250px; padding: 10px;">
+                <option value="">Select Specialization</option>
+                <option value="Personal Training">Personal Training</option>
+                <option value="Weight Loss & Fat Loss">Weight Loss & Fat Loss</option>
+                <option value="Yoga & Flexibility">Yoga & Flexibility</option>
+                <option value="Bodybuilding & Physique Training">Bodybuilding & Physique Training</option>
+                <option value="Rehabilitation & Injury Recovery">Rehabilitation & Injury Recovery</option>
+                <option value="Senior Fitness Training">Senior Fitness Training</option>
+            </select>
+            
+            <input type="text" name="contact" placeholder="Contact" required style="width: 200px; padding: 10px;">
+            
+            <button type="submit" style="padding: 10px 15px;">Add Trainer</button>
+        </form>
+        <h2>Trainer Details</h2>
+        <table>
+            <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Specialization</th>
+                <th>Contact</th>
+                <th>Actions</th>
+            </tr>
+            {% for trainer in trainers %}
+            <tr>
+                <td>{{ trainer.id }}</td>
+                <td>{{ trainer.name }}</td>
+                <td>{{ trainer.specialization }}</td>
+                <td>{{ trainer.contact }}</td>
+                <td>
+                    <form action="{{ url_for('edit_trainer', trainer_id=trainer.id) }}" method="GET" style="display:inline;">
+                        <button type="submit">Edit</button>
+                    </form>
+                    <form action="{{ url_for('delete_trainer', trainer_id=trainer.id) }}" method="POST">
+                        <button type="submit" onclick="return confirm('Delete this trainer?')">Delete</button>
+                    </form>
+                </td>
+            </tr>
+            {% endfor %}
+        </table>
+    </div>
+
+    <!-- Add Content Section -->
+    <div id="add-content" class="container">
+        <h1>Upload Subscription Content</h1>
+        <form action="{{ url_for('upload_content') }}" method="POST" enctype="multipart/form-data">
+            
+            <label for="title">Title:</label>
+            <input type="text" id="title" name="title" required>
+        
+            <label for="description">Description:</label>
+            <textarea id="description" name="description" rows="4" required></textarea>
+            <!-- Subscription Type -->
+            <label for="subscription_type">Select Subscription Type:</label>
+            <select id="subscription_type" name="subscription_type">
+                <option value="" disabled selected>Choose Subscription</option>
+                <option value="Basic">Basic</option>
+                <option value="Premium">Premium</option>
+                <option value="VIP">VIP</option>
+            </select>
+    
+            <!-- Content Type -->
+            <label for="content_type">Select Content Type:</label>
+            <select id="content_type" name="content_type" >
+                <option value="" disabled selected>Choose Content Type</option>
+                <option value="text">Text File</option>
+                <option value="image">Image</option>
+                <option value="video">Video</option>
+            </select>
+    
+            <!-- File Upload -->
+            <label for="file">Upload File:</label>
+            <input type="file" id="file" name="file" >
+    
+            <!-- Submit Button -->
+            <button type="submit" >Upload</button>
+        </form>
+    </div>
+
+    <!-- View Content Section -->
+<div id="view-content" class="container">
+    <h1>Uploaded Subscription Content</h1>
+
+    <!-- Filter Section -->
+    <div style="margin-bottom: 15px;">
+        <label for="filter-subscription">Filter by Subscription Type:</label>
+        <select id="filter-subscription" onchange="filterContent()">
+            <option value="all">All</option>
+            <option value="Basic">Basic</option>
+            <option value="Premium">Premium</option>
+            <option value="VIP">VIP</option>
+        </select>
+
+        <label for="filter-content-type" style="margin-left: 15px;">Filter by Content Type:</label>
+        <select id="filter-content-type" onchange="filterContent()">
+            <option value="all">All</option>
+            <option value="text">Text</option>
+            <option value="image">Image</option>
+            <option value="video">Video</option>
+        </select>
+    </div>
+
+    <div class="table-container">
+        <table id="content-table">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Subscription Type</th>
+                    <th>Content Type</th>
+                    <th>Filename</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for content in uploaded_content %}
+                <tr class="content-row"
+                    data-subscription="{{ content.subscription_type }}"
+                    data-content-type="{{ content.content_type }}">
+                    <td>{{ content.id }}</td>
+                    <td>{{ content.subscription_type }}</td>
+                    <td>{{ content.content_type }}</td>
+                    <td>{{ content.filename }}</td>
+                    <td>
+                        <a href="{{ url_for('get_content', content_id=content.id) }}" target="_blank">View</a>
+                        <form action="{{ url_for('delete_content', content_id=content.id) }}" method="POST" style="display:inline;">
+                            <button type="submit">Delete</button>
+                        </form>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+    <script>
+        function showSection(sectionId) {
+            document.querySelectorAll('.container').forEach(section => {
+                section.classList.remove('active');
+            });
+            document.getElementById(sectionId).classList.add('active');
+        }
+
+        function filterContent() {
+            let selectedSubscription = document.getElementById("filter-subscription").value;
+            let selectedContentType = document.getElementById("filter-content-type").value;
+            
+            let rows = document.querySelectorAll(".content-row");
+            
+            rows.forEach(row => {
+                let subscription = row.getAttribute("data-subscription");
+                let contentType = row.getAttribute("data-content-type");
+    
+                // Check if the row matches the selected filters
+                let matchesSubscription = (selectedSubscription === "all" || subscription === selectedSubscription);
+                let matchesContentType = (selectedContentType === "all" || contentType === selectedContentType);
+    
+                if (matchesSubscription && matchesContentType) {
+                    row.style.display = "";
+                } else {
+                    row.style.display = "none";
+                }
+            });
+        }
+    </script>
+
+</body>
+</html>

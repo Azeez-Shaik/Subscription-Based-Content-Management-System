@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Trainer Management</title>
+</head>
+<body>
+    <h2>Trainer Management</h2>
+
+    <a href="{{ url_for('add_trainer') }}">Add New Trainer</a>
+    <table>
+        <tr>
+            <th>Name</th>
+            <th>Specialization</th>
+            <th>Contact</th>
+            <th>Email</th>
+            <th>Actions</th>
+        </tr>
+        {% for trainer in trainers %}
+        <tr>
+            <td>{{ trainer['name'] }}</td>
+            <td>{{ trainer['specialization'] }}</td>
+            <td>{{ trainer['contact'] }}</td>
+            <td>{{ trainer['email'] }}</td>
+            <td>
+                <a href="{{ url_for('edit_trainer', trainer_id=trainer['id']) }}">Edit</a> |
+                <form action="{{ url_for('delete_trainer', trainer_id=trainer['id']) }}" method="POST" style="display:inline;">
+                    <button type="submit">Delete</button>
+                </form>
+            </td>
+        </tr>
+        {% endfor %}
+    </table>
+    <a href="{{ url_for('admin_dashboard') }}">Back to Admin Dashboard</a>
+</body>
+</html>

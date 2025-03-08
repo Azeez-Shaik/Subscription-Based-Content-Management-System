@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Upgrade Subscription</title>
+</head>
+<body>
+    <h2>Upgrade Your Subscription</h2>
+    <form action="{{ url_for('upgrade_subscription') }}" method="POST">
+        <select name="subscription_type">
+            <option value="Basic">Basic ($10/month)</option>
+            <option value="Premium">Premium ($20/month)</option>
+            <option value="VIP">VIP ($50/month)</option>
+        </select>
+        <button type="submit">Upgrade Subscription</button>
+    </form>
+</body>
+</html>

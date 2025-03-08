@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Subscription</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <h2>Edit User Subscription</h2>
+    
+    <form action="{{ url_for('edit_user_subscription', user_id=user.id) }}" method="POST">
+        <label for="name">Name:</label>
+        <input type="text" id="name" name="name" value="{{ user.name }}" required><br><br>
+
+        <label for="email">Email:</label>
+        <input type="email" id="email" name="email" value="{{ user.email }}" required><br><br>
+
+        <label for="subscription_type">Subscription Type:</label>
+        <select id="subscription_type" name="subscription_type">
+            <option value="basic" {% if user.subscription_type == 'basic' %}selected{% endif %}>Basic</option>
+            <option value="premium" {% if user.subscription_type == 'premium' %}selected{% endif %}>Premium</option>
+            <option value="vip" {% if user.subscription_type == 'vip' %}selected{% endif %}>VIP</option>
+        </select><br><br>
+
+        <label for="expiry_date">Starting Date:</label>
+        <input type="date" id="expiry_date" name="expiry_date" value="{{ user.expiry_date }}" required><br><br>
+
+        <button type="submit">Update Subscription</button>
+        <a href="{{ url_for('admin_dashboard') }}">Cancel</a>
+    </form>
+</body>
+</html>
